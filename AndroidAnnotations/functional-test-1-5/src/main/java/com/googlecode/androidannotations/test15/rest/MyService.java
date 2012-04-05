@@ -24,6 +24,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.googlecode.androidannotations.annotations.rest.Accept;
+import com.googlecode.androidannotations.annotations.rest.ContentType;
 import com.googlecode.androidannotations.annotations.rest.Delete;
 import com.googlecode.androidannotations.annotations.rest.Get;
 import com.googlecode.androidannotations.annotations.rest.Head;
@@ -40,6 +41,7 @@ public interface MyService {
 	// url variables are mapped to method parameter names.
 	@Get("/events/{year}/{location}")
 	@Accept(MediaType.APPLICATION_JSON)
+	@ContentType(MediaType.APPLICATION_JSON)
 	EventList getEvents(String location, int year);
 
 	// The response can be a ResponseEntity<T>
@@ -54,6 +56,7 @@ public interface MyService {
 	// parameter will be used as the post entity.
 	@Post("/events/")
 	@Accept(MediaType.APPLICATION_JSON)
+	@ContentType(MediaType.APPLICATION_JSON)
 	Event addEvent(Event event);
 
 	@Post("/events/{year}/")

@@ -27,6 +27,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import com.googlecode.androidannotations.annotations.rest.Accept;
+import com.googlecode.androidannotations.annotations.rest.ContentType;
 import com.googlecode.androidannotations.helper.ProcessorConstants;
 import com.googlecode.androidannotations.helper.RestAnnotationHelper;
 import com.googlecode.androidannotations.processing.EBeansHolder;
@@ -35,6 +36,7 @@ import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
@@ -197,6 +199,14 @@ public abstract class MethodProcessor implements ElementProcessor {
 			body.add(JExpr.invoke(httpHeadersVar, "setAccept").arg(mediaTypeListParam));
 		}
 
+		String contentType = retrieveContentTypeAnnotationValue(executableElement);
+		boolean hasContentTypeDefined = contentType != null;
+		if (hasContentTypeDefined) {
+			JClass mediaTypeClass = holder.refClass(ProcessorConstants.MEDIA_TYPE);
+
+			body.add(JExpr.invoke(httpHeadersVar, "setContentType").arg(mediaTypeClass.staticRef(contentType)));
+		}
+		
 		return httpHeadersVar;
 	}
 
@@ -207,6 +217,18 @@ public abstract class MethodProcessor implements ElementProcessor {
 		}
 		if (acceptAnnotation != null) {
 			return acceptAnnotation.value().name();
+		} else {
+			return null;
+		}
+	}
+
+	private String retrieveContentTypeAnnotationValue(ExecutableElement executableElement) {
+		ContentType contentTypeAnnotation = executableElement.getAnnotation(ContentType.class);
+		if (contentTypeAnnotation == null) {
+			contentTypeAnnotation = executableElement.getEnclosingElement().getAnnotation(ContentType.class);
+		}
+		if (contentTypeAnnotation != null) {
+			return contentTypeAnnotation.value().name();
 		} else {
 			return null;
 		}
