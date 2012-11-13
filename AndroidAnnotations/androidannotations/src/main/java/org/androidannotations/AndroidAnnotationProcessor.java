@@ -108,6 +108,7 @@ import org.androidannotations.annotations.rest.RestService;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 import org.androidannotations.generation.CodeModelGenerator;
+import org.androidannotations.helper.AndroidAnnotationsVersionChecker;
 import org.androidannotations.helper.AndroidManifest;
 import org.androidannotations.helper.AndroidManifestFinder;
 import org.androidannotations.helper.TimeStats;
@@ -337,6 +338,7 @@ public class AndroidAnnotationProcessor extends AnnotatedAbstractProcessor {
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		timeStats.clear();
 		timeStats.start("Whole Processing");
+
 		try {
 			processThrowing(annotations, roundEnv);
 		} catch (Exception e) {
@@ -353,20 +355,26 @@ public class AndroidAnnotationProcessor extends AnnotatedAbstractProcessor {
 			return;
 		}
 
-		AnnotationElementsHolder extractedModel = extractAnnotations(annotations, roundEnv);
+		AndroidAnnotationsVersionChecker androidAnnotationsVersionChecker = new AndroidAnnotationsVersionChecker(//
+				annotations.iterator().next(), processingEnv, roundEnv);
 
-		AndroidManifest androidManifest = extractAndroidManifest();
+		if (androidAnnotationsVersionChecker.isAPIJarInClassPath()) {
 
-		IRClass rClass = findRClasses(androidManifest);
+			AnnotationElementsHolder extractedModel = extractAnnotations(annotations, roundEnv);
 
-		AndroidSystemServices androidSystemServices = new AndroidSystemServices();
+			AndroidManifest androidManifest = extractAndroidManifest();
 
-		AnnotationElements validatedModel = validateAnnotations(extractedModel, rClass, androidSystemServices, androidManifest);
+			IRClass rClass = findRClasses(androidManifest);
 
-		if (validatedModel != null) {
-			ProcessResult processResult = processAnnotations(validatedModel, rClass, androidSystemServices, androidManifest);
+			AndroidSystemServices androidSystemServices = new AndroidSystemServices();
 
-			generateSources(processResult);
+			AnnotationElements validatedModel = validateAnnotations(extractedModel, rClass, androidSystemServices, androidManifest);
+
+			if (validatedModel != null) {
+				ProcessResult processResult = processAnnotations(validatedModel, rClass, androidSystemServices, androidManifest);
+
+				generateSources(processResult);
+			}
 		}
 	}
 
