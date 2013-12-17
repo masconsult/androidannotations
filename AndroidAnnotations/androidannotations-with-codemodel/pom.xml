@@ -13,7 +13,6 @@
 	<name>AndroidAnnotations With CodeModel</name>
 	<packaging>pom</packaging>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>org.androidannotations</groupId>
@@ -28,7 +27,7 @@
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/jar-with-codemodel.xml</descriptor>
-					</descriptors>	
+					</descriptors>
 					<finalName>${project.build.finalName}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>

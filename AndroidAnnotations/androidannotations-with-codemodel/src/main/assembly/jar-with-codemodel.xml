@@ -32,7 +32,6 @@
 			<includes>
 				<include>com.sun.codemodel:codemodel</include>
 				<include>org.androidannotations:androidannotations</include>
-				<include>org.androidannotations:androidannotations-api</include>
 			</includes>
 		</dependencySet>	
 	</dependencySets>
